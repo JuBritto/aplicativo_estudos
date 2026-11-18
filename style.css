@@ -42,6 +42,38 @@ body.dark-theme {
   --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
 }
 
+body.vampire-theme {
+  --bg-app: #000000;
+  --bg-sidebar: #050507;
+  --bg-card: #0a0a0d;
+  --bg-card-subtle: #14111c;
+  --bg-input: #050507;
+  --border-color: #27193b;
+  --border-subtle: #191026;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #d8b4fe;
+  --text-muted: #8b5cf6;
+  
+  --primary: #a855f7;
+  --primary-hover: #9333ea;
+  --primary-glow: rgba(168, 85, 247, 0.35);
+  
+  --danger: #f43f5e;
+  --danger-hover: #e11d48;
+  --danger-bg: rgba(244, 63, 94, 0.15);
+  
+  --success: #a855f7;
+  --card-shadow: 0 0 0 1px #221533, 0 10px 30px -10px rgba(168, 85, 247, 0.2);
+
+  --color-pomodoro: #a855f7;
+  --color-pomodoro-glow: rgba(168, 85, 247, 0.35);
+  --color-short-break: #c084fc;
+  --color-short-break-glow: rgba(192, 132, 252, 0.35);
+  --color-long-break: #e879f9;
+  --color-long-break-glow: rgba(232, 121, 249, 0.35);
+}
+
 body.light-theme {
   --bg-app: #f1f5f9;
   --bg-sidebar: #ffffff;
@@ -241,10 +273,63 @@ body {
   color: var(--text-primary);
 }
 
-body.dark-theme .icon-sun { display: block; }
-body.dark-theme .icon-moon { display: none; }
-body.light-theme .icon-sun { display: none; }
-body.light-theme .icon-moon { display: block; }
+/* Ícones de Tema */
+.icon-sun,
+.icon-moon,
+.icon-vampire {
+  display: none;
+  flex-shrink: 0;
+}
+
+body.dark-theme .icon-moon { display: block; }
+body.vampire-theme .icon-vampire { display: block; color: var(--primary); }
+body.light-theme .icon-sun { display: block; }
+
+/* --- DETALHES ESPECÍFICOS: MODO VAMPIRE (MINIMALISTA) --- */
+body.vampire-theme .logo h2 {
+  background: linear-gradient(135deg, #ffffff 15%, #c084fc 60%, #9333ea 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.vampire-theme .logo-icon {
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.6));
+}
+
+body.vampire-theme #btn-theme-toggle {
+  color: var(--primary);
+}
+
+body.vampire-theme .list-nav-item.active {
+  background-color: #9333ea;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+}
+
+body.vampire-theme .custom-checkbox:checked {
+  background-color: #a855f7;
+  border-color: #a855f7;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+}
+
+body.vampire-theme .toast {
+  border-color: #a855f7;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+}
+
+body.vampire-theme ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+body.vampire-theme ::-webkit-scrollbar-track {
+  background: #000000;
+}
+body.vampire-theme ::-webkit-scrollbar-thumb {
+  background: #27193b;
+  border-radius: var(--radius-full);
+}
+body.vampire-theme ::-webkit-scrollbar-thumb:hover {
+  background: #a855f7;
+}
 
 /* --- MAIN CONTENT --- */
 .main-content {

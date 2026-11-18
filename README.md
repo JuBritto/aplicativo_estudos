@@ -45,6 +45,6 @@ Existem duas formas fáceis de abrir o aplicativo no seu computador:
   - Botão de mutar/desmutar som a qualquer momento.
 
 ### 🎨 Personalização & Armazenamento
-- **Modo Escuro / Claro:** Alterne o tema com um clique.
+- **Temas (Escuro, Claro e Vampire):** Alterne entre o modo clássico escuro, claro ou o tema especial **Vampire** (preto profundo com detalhes em roxo e estética minimalista).
 - **100% Offline e Seguro:** Todos os dados são salvos automaticamente no armazenamento local do seu computador (`localStorage`).
 - **Nenhuma Instalação Adicional:** Não requer Node.js, nem bibliotecas pesadas.

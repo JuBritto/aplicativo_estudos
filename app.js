@@ -249,15 +249,20 @@ function showToast(message) {
 
 // --- RENDERIZADORES ---
 
-// Atualiza o tema da interface
+// Atualiza o tema da interface (Dark, Vampire, Light)
 function applyTheme() {
-  if (appState.theme === 'dark') {
-    bodyEl.classList.remove('light-theme');
-    bodyEl.classList.add('dark-theme');
+  bodyEl.classList.remove('dark-theme', 'light-theme', 'vampire-theme');
+
+  if (appState.theme === 'vampire') {
+    bodyEl.classList.add('vampire-theme');
+    themeText.textContent = 'Modo Vampire';
+  } else if (appState.theme === 'light') {
+    bodyEl.classList.add('light-theme');
     themeText.textContent = 'Modo Claro';
   } else {
-    bodyEl.classList.remove('dark-theme');
-    bodyEl.classList.add('light-theme');
+    // Padrão: Modo Escuro
+    appState.theme = 'dark';
+    bodyEl.classList.add('dark-theme');
     themeText.textContent = 'Modo Escuro';
   }
 }
@@ -677,11 +682,24 @@ btnClearCompleted.addEventListener('click', () => {
   }
 });
 
-// Alternar Tema
+// Alternar Tema (Escuro -> Vampire -> Claro -> Escuro)
 btnThemeToggle.addEventListener('click', () => {
-  appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+  const nextThemeMap = {
+    'dark': 'vampire',
+    'vampire': 'light',
+    'light': 'dark'
+  };
+  appState.theme = nextThemeMap[appState.theme] || 'dark';
   applyTheme();
   saveState();
+
+  if (appState.theme === 'vampire') {
+    showToast('Modo Vampire ativado! 🦇');
+  } else if (appState.theme === 'light') {
+    showToast('Modo Claro ativado! ☀️');
+  } else {
+    showToast('Modo Escuro ativado! 🌙');
+  }
 });
 
 // Renomear Lista Atual
