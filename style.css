@@ -410,6 +410,12 @@ body.vampire-theme ::-webkit-scrollbar-thumb:hover {
   box-sizing: border-box;
 }
 
+.pomodoro-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .mode-tabs {
   display: flex;
   flex: 1;
@@ -1307,4 +1313,316 @@ body.mode-longBreak .btn-primary-large {
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* ==========================================================================
+   MODO WIDGET (COMPACTO E MINIMALISTA)
+   ========================================================================== */
+
+/* Barra do Widget (oculta no modo tela cheia normal) */
+.widget-bar {
+  display: none;
+}
+
+/* Oculta totalmente as barras de rolagem no Modo Widget */
+body.widget-mode,
+body.widget-mode * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+body.widget-mode::-webkit-scrollbar,
+body.widget-mode *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Estado ativo do Modo Widget */
+body.widget-mode {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: auto;
+  height: auto;
+  padding: 8px 10px;
+  background-color: var(--bg-app);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+body.widget-mode .sidebar {
+  display: none !important;
+}
+
+body.widget-mode .app-container {
+  width: 100%;
+  max-width: 360px;
+  min-height: auto;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+body.widget-mode .main-content {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: 1fr;
+  padding: 0;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Barra Superior do Widget */
+body.widget-mode .widget-bar {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  box-shadow: var(--card-shadow);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.widget-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.widget-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-glow);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.widget-list-select {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
+.widget-list-select:focus {
+  border-color: var(--primary);
+}
+
+.btn-widget-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 5px 9px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-widget-exit:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* Card Pomodoro Compacto */
+body.widget-mode .pomodoro-card {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+}
+
+body.widget-mode .pomodoro-header {
+  margin-bottom: 6px;
+  gap: 6px;
+}
+
+body.widget-mode .mode-tabs {
+  padding: 2px;
+}
+
+body.widget-mode .mode-tab {
+  padding: 4px 6px;
+  font-size: 0.72rem;
+}
+
+body.widget-mode .timer-display-container {
+  margin: 6px 0 10px;
+}
+
+body.widget-mode .progress-ring-container {
+  width: 124px;
+  height: 124px;
+}
+
+body.widget-mode .progress-ring {
+  width: 124px;
+  height: 124px;
+}
+
+body.widget-mode .timer-numbers {
+  font-size: 1.85rem;
+}
+
+body.widget-mode .timer-label {
+  font-size: 0.65rem;
+  margin-top: 2px;
+}
+
+body.widget-mode .focused-task-banner {
+  margin: 0 auto 8px;
+  padding: 4px 10px;
+  max-width: 100%;
+}
+
+body.widget-mode .focused-label {
+  font-size: 0.72rem;
+}
+
+body.widget-mode .focused-task-name {
+  font-size: 0.76rem;
+}
+
+body.widget-mode .timer-controls {
+  margin: 0 auto 4px;
+  max-width: 100%;
+  gap: 6px;
+}
+
+body.widget-mode .btn-primary-large {
+  padding: 8px 14px;
+  font-size: 0.88rem;
+}
+
+body.widget-mode .timer-secondary-actions .btn-secondary {
+  padding: 5px 8px;
+  font-size: 0.76rem;
+}
+
+body.widget-mode .pomodoro-profile-pill,
+body.widget-mode .pomodoro-stats {
+  display: none !important;
+}
+
+/* Card de Tarefas Compacto */
+body.widget-mode .tasks-card {
+  min-height: auto;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+}
+
+body.widget-mode .tasks-header {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+
+body.widget-mode .tasks-title-group {
+  gap: 2px;
+}
+
+body.widget-mode .list-icon-badge {
+  font-size: 1.1rem;
+}
+
+body.widget-mode #current-list-title {
+  font-size: 1.05rem;
+}
+
+body.widget-mode .tasks-summary {
+  font-size: 0.75rem;
+}
+
+body.widget-mode .tasks-actions-header {
+  display: none !important;
+}
+
+body.widget-mode .task-input-box {
+  margin-bottom: 8px;
+  gap: 6px;
+}
+
+body.widget-mode .task-input-box input {
+  padding: 7px 10px;
+  font-size: 0.84rem;
+}
+
+body.widget-mode .task-input-box .btn-primary {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+}
+
+body.widget-mode .tasks-filter-bar {
+  margin-bottom: 8px;
+}
+
+body.widget-mode .filter-pill {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+}
+
+body.widget-mode .btn-clear-completed {
+  font-size: 0.72rem;
+  padding: 3px 6px;
+}
+
+body.widget-mode .tasks-list {
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 0;
+  gap: 6px;
+  scrollbar-width: none !important;
+}
+
+body.widget-mode .task-item {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+}
+
+body.widget-mode .task-text {
+  font-size: 0.84rem;
+}
+
+body.widget-mode .btn-task-action {
+  padding: 3px 5px;
+  font-size: 0.72rem;
+}
+
+/* Efeitos Especiais Vampire no Widget */
+body.vampire-theme.widget-mode .widget-bar {
+  border-color: #27193b;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.15);
+}
+
+body.vampire-theme .widget-badge {
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
 }

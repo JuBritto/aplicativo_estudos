@@ -31,6 +31,11 @@
       </div>
 
       <div class="sidebar-footer">
+        <button id="btn-sidebar-widget" class="footer-btn" title="Ativar Modo Widget (W)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="9" y="9" width="10" height="10" rx="1.5" ry="1.5"></rect></svg>
+          <span>Modo Widget</span>
+        </button>
+
         <button id="btn-theme-toggle" class="footer-btn" title="Alternar tema (Escuro / Vampire / Claro)">
           <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           <svg class="icon-vampire" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13c1.5-3 5-3.5 7-1.5 1-2 4-2 6 0 2-2 5.5-1.5 7 1.5-1.5 4.5-5 5.5-7 4-1.5 1.5-4.5 1.5-6 0-2 1.5-5.5.5-7-4z"></path><path d="M9.5 11.5l1-2 1 2"></path><path d="M12.5 11.5l1-2 1 2"></path></svg>
@@ -47,6 +52,27 @@
 
     <!-- ÁREA PRINCIPAL -->
     <main class="main-content">
+      <!-- BARRA DO MODO WIDGET -->
+      <header id="widget-bar" class="widget-bar">
+        <div class="widget-bar-left">
+          <span class="widget-badge">🍅 Widget</span>
+          <select id="widget-list-select" class="widget-list-select" title="Trocar de lista">
+            <!-- Populado via JavaScript -->
+          </select>
+        </div>
+        <div class="widget-bar-right">
+          <button id="btn-exit-widget" class="btn-widget-exit" title="Voltar ao modo normal (W ou Esc)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <polyline points="9 21 3 21 3 15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+            <span>Expandir</span>
+          </button>
+        </div>
+      </header>
+
       <!-- PAINEL POMODORO -->
       <section class="card pomodoro-card">
         <div class="pomodoro-header">
@@ -55,15 +81,20 @@
             <button class="mode-tab" data-mode="shortBreak">Pausa Curta</button>
             <button class="mode-tab" data-mode="longBreak">Pausa Longa</button>
           </div>
-          <button id="btn-sound-toggle" class="btn-icon" title="Ativar/Desativar Som">
-            <svg id="sound-icon-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-            <svg id="sound-icon-off" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-          </button>
+          <div class="pomodoro-header-actions">
+            <button id="btn-toggle-widget" class="btn-icon" title="Modo Widget (W)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="9" y="9" width="10" height="10" rx="1.5" ry="1.5"></rect></svg>
+            </button>
+            <button id="btn-sound-toggle" class="btn-icon" title="Ativar/Desativar Som">
+              <svg id="sound-icon-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+              <svg id="sound-icon-off" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+            </button>
+          </div>
         </div>
 
         <div class="timer-display-container">
           <div class="progress-ring-container">
-            <svg class="progress-ring" width="240" height="240">
+            <svg class="progress-ring" viewBox="0 0 240 240" width="240" height="240">
               <circle class="progress-ring-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="105" cx="120" cy="120" />
               <circle class="progress-ring-indicator" id="progress-indicator" stroke="currentColor" stroke-width="8" stroke-linecap="round" fill="transparent" r="105" cx="120" cy="120" />
             </svg>

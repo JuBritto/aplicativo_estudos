@@ -6,18 +6,31 @@ Um aplicativo moderno, rápido e sem dependências externas para gerenciamento d
 
 ## 🚀 Como Iniciar o Aplicativo
 
-Existem duas formas fáceis de abrir o aplicativo no seu computador:
+Existem formas fáceis de abrir o aplicativo no seu computador:
 
-1. **Modo Aplicativo (Recomendado):**  
+1. **Modo Janela Completa (Recomendado):**  
    Dê dois cliques no arquivo **`Abrir Aplicativo.bat`**.  
    Ele abrirá o sistema em uma janela dedicada, parecendo um aplicativo nativo do Windows (sem barra de endereços).
 
-2. **No seu Navegador Padrão:**  
+2. **Modo Widget Compacto Direto:**  
+   Dê dois cliques no arquivo **`Abrir Modo Widget.bat`**.  
+   Ele abrirá o sistema diretamente em uma janela pequena e compacta no canto da tela, focando apenas no timer e nas tarefas.
+
+3. **No seu Navegador Padrão:**  
    Dê dois cliques diretamente no arquivo **`index.html`** para abrir no seu navegador favorito (Chrome, Edge, Firefox, Brave, etc.).
 
 ---
 
 ## ✨ Funcionalidades
+
+### 🪟 Modo Widget (Compacto & Minimalista)
+- **Visual Compacto na Tela:** Esconde a barra lateral e mantém apenas o essencial: o timer Pomodoro e a lista de tarefas da categoria atual.
+- **Altura Dinâmica sem Barras de Rolar:** Conforme você adiciona novos itens, a janela cresce verticalmente para acompanhar a lista até um limite máximo confortável, sem exibir barras de rolagem visíveis.
+- **Seletor Rápido de Listas:** Alterne entre listas diretamente pelo topo do Widget sem precisar abrir o menu lateral.
+- **Como Ativar / Desativar:**
+  - Clique no botão **Modo Widget** na barra lateral ou no ícone de janela no topo do Pomodoro.
+  - Pressione a tecla **`W`** no teclado para alternar rapidamente entre o modo completo e widget.
+  - Pressione **`Esc`** ou clique em **Expandir** para voltar ao modo normal a qualquer momento.
 
 ### 📋 To-Do List (Gestão de Tarefas)
 - **Múltiplas Listas:** Crie novas listas personalizadas (ex: *Estudos*, *Trabalho*, *Projetos*, *Compras*) clicando no botão `+` na barra lateral.

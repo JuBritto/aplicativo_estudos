@@ -40,6 +40,7 @@ const TIMER_PROFILES = {
 const DEFAULT_STATE = {
   theme: 'dark',
   soundEnabled: true,
+  widgetMode: false,
   activeListId: 'default-1',
   lists: [
     {
@@ -129,6 +130,12 @@ const btnNewList = document.getElementById('btn-new-list');
 const btnThemeToggle = document.getElementById('btn-theme-toggle');
 const themeText = document.getElementById('theme-text');
 const btnOpenSettings = document.getElementById('btn-open-settings');
+const btnSidebarWidget = document.getElementById('btn-sidebar-widget');
+
+// Widget Elements
+const btnToggleWidget = document.getElementById('btn-toggle-widget');
+const btnExitWidget = document.getElementById('btn-exit-widget');
+const widgetListSelect = document.getElementById('widget-list-select');
 
 // Pomodoro Elements
 const modeTabs = document.querySelectorAll('.mode-tab');
@@ -448,6 +455,11 @@ function renderTasksArea() {
       tasksListEl.appendChild(li);
     });
   }
+
+  // Ajusta dinamicamente o tamanho da janela conforme itens na lista
+  if (appState.widgetMode) {
+    adjustWidgetWindowSize();
+  }
 }
 
 // Banner da tarefa em foco atual
@@ -497,11 +509,177 @@ function renderProfilePill() {
   }
 }
 
+// Dimensões do Modo Widget
+const WIDGET_WIDTH = 380;
+const MIN_WIDGET_HEIGHT = 440;
+const NORMAL_WIDTH = 1200;
+const NORMAL_HEIGHT = 800;
+
+let lastNormalWindowSize = {
+  width: NORMAL_WIDTH,
+  height: NORMAL_HEIGHT,
+  x: null,
+  y: null
+};
+
+let widgetStandaloneWindow = null;
+
+// Calcula a altura ideal da janela do widget baseado no número de tarefas atuais
+function getDynamicWidgetHeight() {
+  const container = document.querySelector('.app-container');
+  const contentHeight = container ? container.getBoundingClientRect().height : 480;
+
+  // Barra de título e bordas nativas da janela do Windows
+  const frameDiff = window.outerHeight - window.innerHeight;
+  const frameHeight = (frameDiff > 0 && frameDiff < 140) ? frameDiff : 38;
+  const paddingOffset = 20;
+
+  const calculatedTotal = Math.ceil(contentHeight + paddingOffset + frameHeight);
+
+  // Limite máximo: até 900px ou 93% da altura útil da tela
+  const screenMax = Math.floor(screen.availHeight * 0.93);
+  const MAX_WIDGET_HEIGHT = Math.min(900, screenMax);
+
+  return Math.max(MIN_WIDGET_HEIGHT, Math.min(MAX_WIDGET_HEIGHT, calculatedTotal));
+}
+
+// Ajusta a altura da janela dinamicamente conforme itens são adicionados/removidos
+function adjustWidgetWindowSize() {
+  if (!appState.widgetMode) return;
+
+  requestAnimationFrame(() => {
+    const targetHeight = getDynamicWidgetHeight();
+
+    try {
+      window.resizeTo(WIDGET_WIDTH, targetHeight);
+    } catch (e) {
+      console.warn('Redimensionamento dinâmico ignorado pelo navegador:', e);
+    }
+
+    if (widgetStandaloneWindow && !widgetStandaloneWindow.closed) {
+      try {
+        widgetStandaloneWindow.resizeTo(WIDGET_WIDTH, targetHeight);
+      } catch (e) {}
+    }
+  });
+}
+
+// Renderiza o seletor de listas do Modo Widget
+function renderWidgetListSelect() {
+  if (!widgetListSelect) return;
+  widgetListSelect.innerHTML = appState.lists.map(list => {
+    const isSelected = list.id === appState.activeListId ? 'selected' : '';
+    return `<option value="${list.id}" ${isSelected}>${list.icon || '📋'} ${escapeHtml(list.name)}</option>`;
+  }).join('');
+}
+
+// Abre uma janela popup de formato estritamente fixo quando o navegador bloqueia resizeTo na janela principal
+function openFixedWidgetWindow() {
+  if (widgetStandaloneWindow && !widgetStandaloneWindow.closed) {
+    widgetStandaloneWindow.focus();
+    return;
+  }
+
+  const targetHeight = getDynamicWidgetHeight();
+  const targetLeft = Math.max(0, screen.availWidth - WIDGET_WIDTH - 25);
+  const targetTop = 30;
+
+  widgetStandaloneWindow = window.open(
+    'index.html#widget',
+    'PomodoroWidgetFixed',
+    `width=${WIDGET_WIDTH},height=${targetHeight},left=${targetLeft},top=${targetTop},menubar=no,toolbar=no,location=no,status=no,resizable=no`
+  );
+
+  if (widgetStandaloneWindow) {
+    widgetStandaloneWindow.focus();
+    // Restaura a janela de fundo para o modo normal para não ficar com layout reduzido
+    bodyEl.classList.remove('widget-mode');
+    appState.widgetMode = false;
+    saveState();
+  }
+}
+
+// Controle do Modo Widget (Janela Pequena e Formato Fixo que Acompanha Itens)
+function setWidgetMode(enabled, showNotification = true) {
+  appState.widgetMode = !!enabled;
+
+  if (appState.widgetMode) {
+    bodyEl.classList.add('widget-mode');
+
+    // Salva o tamanho atual da janela para poder restaurar depois
+    if (window.outerWidth > 500) {
+      lastNormalWindowSize.width = window.outerWidth;
+      lastNormalWindowSize.height = window.outerHeight;
+      lastNormalWindowSize.x = window.screenX !== undefined ? window.screenX : null;
+      lastNormalWindowSize.y = window.screenY !== undefined ? window.screenY : null;
+    }
+
+    // 1. Tenta posicionar no canto e redimensionar a altura dinamicamente para os itens atuais
+    const targetLeft = Math.max(0, screen.availWidth - WIDGET_WIDTH - 25);
+    const targetTop = 30;
+
+    try {
+      window.moveTo(targetLeft, targetTop);
+    } catch (e) {}
+
+    adjustWidgetWindowSize();
+
+    // 2. Se a janela atual for uma aba padrão do navegador e ignorou o resizeTo (largura continua grande)
+    setTimeout(() => {
+      if (window.outerWidth > 520) {
+        // Abre automaticamente uma janela compacta com tamanho e formato fixo garantido
+        openFixedWidgetWindow();
+      }
+    }, 120);
+
+    if (showNotification) {
+      showToast('Modo Widget ativo: altura acompanha itens sem barra de rolar! 🍅');
+    }
+  } else {
+    // Se esta janela é um popup que foi aberto a partir de outra janela
+    if (window.opener && !window.opener.closed) {
+      try {
+        window.opener.focus();
+      } catch (e) {}
+      window.close();
+      return;
+    }
+
+    bodyEl.classList.remove('widget-mode');
+
+    // Restaura o tamanho e posição normais da janela
+    try {
+      const restW = lastNormalWindowSize.width || NORMAL_WIDTH;
+      const restH = lastNormalWindowSize.height || NORMAL_HEIGHT;
+      const restX = lastNormalWindowSize.x !== null ? lastNormalWindowSize.x : Math.max(0, (screen.availWidth - restW) / 2);
+      const restY = lastNormalWindowSize.y !== null ? lastNormalWindowSize.y : Math.max(0, (screen.availHeight - restH) / 2);
+
+      window.resizeTo(restW, restH);
+      window.moveTo(restX, restY);
+    } catch (e) {
+      console.warn('Restauração de janela bloqueada pelo navegador:', e);
+    }
+
+    if (showNotification) {
+      showToast('Janela restaurada ao tamanho normal.');
+    }
+  }
+
+  saveState();
+  renderWidgetListSelect();
+}
+
+function toggleWidgetMode() {
+  playClickSound();
+  setWidgetMode(!appState.widgetMode, true);
+}
+
 // Renderiza tudo da aplicação
 function renderAll() {
   applyTheme();
   applySoundState();
   renderSidebarLists();
+  renderWidgetListSelect();
   renderTasksArea();
   renderFocusedTaskBanner();
   renderProfilePill();
@@ -932,11 +1110,40 @@ window.addEventListener('click', (e) => {
   if (e.target === modalSettings) modalSettings.classList.add('hidden');
 });
 
-// Esc para fechar modais
+// Eventos do Modo Widget
+if (btnSidebarWidget) btnSidebarWidget.addEventListener('click', toggleWidgetMode);
+if (btnToggleWidget) btnToggleWidget.addEventListener('click', toggleWidgetMode);
+if (btnExitWidget) btnExitWidget.addEventListener('click', toggleWidgetMode);
+
+if (widgetListSelect) {
+  widgetListSelect.addEventListener('change', (e) => {
+    appState.activeListId = e.target.value;
+    saveState();
+    renderAll();
+    playClickSound();
+  });
+}
+
+// Atalhos de Teclado (W para Modo Widget, Esc para fechar/voltar)
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    modalNewList.classList.add('hidden');
-    modalSettings.classList.add('hidden');
+    if (!modalNewList.classList.contains('hidden')) {
+      modalNewList.classList.add('hidden');
+    } else if (!modalSettings.classList.contains('hidden')) {
+      modalSettings.classList.add('hidden');
+    } else if (appState.widgetMode) {
+      setWidgetMode(false, true);
+    }
+    return;
+  }
+
+  // Tecla 'W' para alternar modo widget (exceto quando digitando em campo de texto)
+  const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+  if (e.key === 'w' || e.key === 'W') {
+    e.preventDefault();
+    toggleWidgetMode();
   }
 });
 
@@ -949,6 +1156,21 @@ function escapeHtml(string) {
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
+  // Ativa modo widget se vier pela hashtag #widget na URL ou se já estava salvo
+  if (window.location.hash === '#widget') {
+    appState.widgetMode = true;
+  }
+  if (appState.widgetMode) {
+    setWidgetMode(true, false);
+  }
   setTimerMode(appState.pomodoro.mode);
   renderAll();
+});
+
+// Sincronização em tempo real caso múltiplas janelas estejam abertas
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY) {
+    appState = loadState();
+    renderAll();
+  }
 });
