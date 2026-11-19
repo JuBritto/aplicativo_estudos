@@ -6,6 +6,37 @@
 // --- ESTADO INICIAL ---
 const STORAGE_KEY = 'foco_tarefas_app_data_v1';
 
+// Perfis sugeridos de Pomodoro
+const TIMER_PROFILES = {
+  quick: {
+    id: 'quick',
+    name: 'Rápido',
+    icon: '⚡',
+    description: 'Sessões rápidas',
+    focusTime: 15,
+    shortBreak: 3,
+    longBreak: 10
+  },
+  traditional: {
+    id: 'traditional',
+    name: 'Tradicional',
+    icon: '🍅',
+    description: 'Padrão clássico',
+    focusTime: 25,
+    shortBreak: 5,
+    longBreak: 15
+  },
+  long: {
+    id: 'long',
+    name: 'Longo',
+    icon: '🚀',
+    description: 'Sessões longas',
+    focusTime: 50,
+    shortBreak: 10,
+    longBreak: 30
+  }
+};
+
 const DEFAULT_STATE = {
   theme: 'dark',
   soundEnabled: true,
@@ -35,6 +66,7 @@ const DEFAULT_STATE = {
     cycles: 0,
     focusedTaskId: null,
     settings: {
+      profile: 'traditional', // 'quick' | 'traditional' | 'long' | 'custom'
       focusTime: 25,
       shortBreak: 5,
       longBreak: 15
@@ -149,6 +181,12 @@ const formSettings = document.getElementById('form-settings');
 const setFocusTime = document.getElementById('set-focus-time');
 const setShortBreak = document.getElementById('set-short-break');
 const setLongBreak = document.getElementById('set-long-break');
+const profileCards = document.querySelectorAll('.profile-card');
+
+// Pomodoro Profile Pill
+const btnQuickSettings = document.getElementById('btn-quick-settings');
+const profilePillIcon = document.getElementById('profile-pill-icon');
+const profilePillText = document.getElementById('profile-pill-text');
 
 const toastEl = document.getElementById('toast');
 let toastTimeout = null;
@@ -437,6 +475,28 @@ function renderFocusedTaskBanner() {
   }
 }
 
+// Renderiza indicador do perfil de tempo do Pomodoro
+function renderProfilePill() {
+  if (!btnQuickSettings || !profilePillIcon || !profilePillText) return;
+  const { focusTime, shortBreak, longBreak } = appState.pomodoro.settings;
+
+  let matchedProf = null;
+  for (const prof of Object.values(TIMER_PROFILES)) {
+    if (prof.focusTime === focusTime && prof.shortBreak === shortBreak && prof.longBreak === longBreak) {
+      matchedProf = prof;
+      break;
+    }
+  }
+
+  if (matchedProf) {
+    profilePillIcon.textContent = matchedProf.icon;
+    profilePillText.textContent = `${matchedProf.name} (${matchedProf.focusTime}/${matchedProf.shortBreak}m)`;
+  } else {
+    profilePillIcon.textContent = '⚙️';
+    profilePillText.textContent = `Personalizado (${focusTime}/${shortBreak}m)`;
+  }
+}
+
 // Renderiza tudo da aplicação
 function renderAll() {
   applyTheme();
@@ -444,6 +504,7 @@ function renderAll() {
   renderSidebarLists();
   renderTasksArea();
   renderFocusedTaskBanner();
+  renderProfilePill();
   updateTimerDisplay();
   cyclesCountEl.textContent = appState.pomodoro.cycles;
 }
@@ -772,16 +833,63 @@ formCreateList.addEventListener('submit', (e) => {
   showToast(`Lista "${name}" criada!`);
 });
 
-// MODAL: Ajustes de Tempo
-btnOpenSettings.addEventListener('click', () => {
-  setFocusTime.value = appState.pomodoro.settings.focusTime;
-  setShortBreak.value = appState.pomodoro.settings.shortBreak;
-  setLongBreak.value = appState.pomodoro.settings.longBreak;
+// Sincroniza a seleção visual do cartão de perfil de acordo com os minutos informados
+function syncProfileSelection(focus, shortB, longB) {
+  let matchedKey = null;
+  for (const [key, prof] of Object.entries(TIMER_PROFILES)) {
+    if (prof.focusTime === focus && prof.shortBreak === shortB && prof.longBreak === longB) {
+      matchedKey = key;
+      break;
+    }
+  }
+
+  profileCards.forEach(card => {
+    card.classList.toggle('selected', card.dataset.profile === matchedKey);
+  });
+}
+
+function openSettingsModal() {
+  const { focusTime, shortBreak, longBreak } = appState.pomodoro.settings;
+  setFocusTime.value = focusTime;
+  setShortBreak.value = shortBreak;
+  setLongBreak.value = longBreak;
+  syncProfileSelection(focusTime, shortBreak, longBreak);
   modalSettings.classList.remove('hidden');
-});
+}
+
+// MODAL: Ajustes de Tempo
+btnOpenSettings.addEventListener('click', openSettingsModal);
+if (btnQuickSettings) {
+  btnQuickSettings.addEventListener('click', openSettingsModal);
+}
 
 btnCloseSettingsModal.addEventListener('click', () => modalSettings.classList.add('hidden'));
 btnCancelSettings.addEventListener('click', () => modalSettings.classList.add('hidden'));
+
+// Clique em cartão de perfil sugerido
+profileCards.forEach(card => {
+  card.addEventListener('click', () => {
+    playClickSound();
+    const profKey = card.dataset.profile;
+    const prof = TIMER_PROFILES[profKey];
+    if (prof) {
+      setFocusTime.value = prof.focusTime;
+      setShortBreak.value = prof.shortBreak;
+      setLongBreak.value = prof.longBreak;
+      profileCards.forEach(c => c.classList.toggle('selected', c === card));
+    }
+  });
+});
+
+// Ao digitar nos inputs, sincronizar se corresponde a algum perfil
+[setFocusTime, setShortBreak, setLongBreak].forEach(input => {
+  input.addEventListener('input', () => {
+    const f = parseInt(setFocusTime.value, 10);
+    const s = parseInt(setShortBreak.value, 10);
+    const l = parseInt(setLongBreak.value, 10);
+    syncProfileSelection(f, s, l);
+  });
+});
 
 formSettings.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -790,14 +898,31 @@ formSettings.addEventListener('submit', (e) => {
   const longVal = parseInt(setLongBreak.value, 10);
 
   if (focusVal > 0 && shortVal > 0 && longVal > 0) {
+    let matchedProfile = 'custom';
+    for (const [key, prof] of Object.entries(TIMER_PROFILES)) {
+      if (prof.focusTime === focusVal && prof.shortBreak === shortVal && prof.longBreak === longVal) {
+        matchedProfile = key;
+        break;
+      }
+    }
+
+    appState.pomodoro.settings.profile = matchedProfile;
     appState.pomodoro.settings.focusTime = focusVal;
     appState.pomodoro.settings.shortBreak = shortVal;
     appState.pomodoro.settings.longBreak = longVal;
     saveState();
     modalSettings.classList.add('hidden');
+
     // Reinicia o timer atual com o novo tempo
     resetTimer();
-    showToast('Ajustes salvos!');
+    renderProfilePill();
+
+    const prof = TIMER_PROFILES[matchedProfile];
+    if (prof) {
+      showToast(`Perfil ${prof.name} ativado (${prof.focusTime}/${prof.shortBreak}m)! ${prof.icon}`);
+    } else {
+      showToast(`Tempos personalizados salvos (${focusVal}/${shortVal}m)! ⏱️`);
+    }
   }
 });
 

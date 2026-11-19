@@ -36,7 +36,11 @@ Existem duas formas fáceis de abrir o aplicativo no seu computador:
   - 🛋️ **Pausa Longa:** 15 minutos (a cada 4 ciclos de foco)
 - **Anel de Progresso Circular:** Visualize o tempo restante graficamente.
 - **Controles Intuitivos:** Iniciar, Pausar, Pular ciclo e Resetar.
-- **Ajustes de Tempo:** Clique em **Ajustes** no menu lateral para personalizar os minutos de foco e pausa como preferir.
+- **Perfis Sugeridos e Ajustes de Tempo:**
+  - ⚡ **Rápido:** 15m foco · 3m pausa curta · 10m pausa longa (ideal para tarefas ágeis).
+  - 🍅 **Tradicional:** 25m foco · 5m pausa curta · 15m pausa longa (padrão clássico Pomodoro).
+  - 🚀 **Longo:** 50m foco · 10m pausa curta · 30m pausa longa (ideal para trabalho profundo / *deep work*).
+  - Permite também ajuste minuto a minuto totalmente personalizado.
 - **Contador de Ciclos:** Registra quantos blocos de foco você concluiu no dia.
 - **Aba Dinâmica:** O tempo restante aparece no título da aba do navegador para você acompanhar mesmo em outra janela.
 - **Notificações & Áudio:**
